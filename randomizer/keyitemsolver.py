@@ -25,6 +25,7 @@
 #  limitations under the License.
 
 import json
+import os
 from collections import namedtuple
 from subprocess import run, PIPE
 
@@ -36,7 +37,7 @@ from doslib.textblock import TextBlock
 from event import easm
 from event.epp import pparse
 from randomizer.flags import Flags
-from randomizer.keyitemevents import *
+from randomizer.keyitemrewards import *
 from stream.outputstream import AddressableOutputStream, OutputStream
 
 KeyItem = namedtuple("KeyItem", ["sprite", "movable", "key_item", "reward"])
@@ -44,68 +45,7 @@ NpcSource = namedtuple("NpcSource", ["map_id", "npc_index"])
 ChestSource = namedtuple("ChestSource", ["map_id", "chest_id", "sprite_id"])
 VehiclePosition = namedtuple("VehiclePosition", ["x", "y"])
 
-EVENT_SOURCE_MAP = {
-    0x00: world_map_init,
-    0x03: earth_b3_init,
-    0x05: earth_b5_init,
-    0x06: elven_castle_init,
-    0x17: suken_shrine_1f,
-    0x1E: mermaid_floor_init,
-    0x1F: chaos_shrine_init,
-    0x22: chaos_temple_3f_init,
-    0x2e: volcano_b5_init,
-    0x2F: crescent_lake_init,
-    0x37: sages_cave_init,
-    0x38: cornelia_castle_1f_event,
-    0x39: cornelia_castle_2f_init,
-    0x3A: cornelia_map_init,
-    0x44: ice_b3_init,
-    0x47: gaia_init,
-    0x4D: citadel_of_trials_f1_init,
-    0x4F: citadel_of_trials_f3_init,
-    0x53: waterfall_init,
-    0x54: bahamuts_cave_init,
-    0x57: mt_duergar_init,
-    0x58: nw_keep_init,
-    0x5B: marsh_cave_b3_init,
-    0x5D: sky_f2_init,
-    0x60: sky_f5_init,
-    0x61: matoyas_cave_init,
-    0x62: pravoka_init,
-    0x6A: melmond_init,
-    0x70: lefein_init,
-    0xfa6: bridge_scene,
-    0x138B: king_event,
-    0x138D: sky2_adamantite_event,
-    0x138E: desert_event,
-    0x138F: fairy_event,
-    0x1390: astos_event,
-    0x1391: matoya_event,
-    0x1393: nerrik_event,
-    0x1394: lukahn_event,
-    0x1395: lefein_event,
-    0x1396: bahamuts_cave_event,
-    0x1398: marsh_event,
-    0x139A: elf_prince_event,
-    0x139c: better_earth_plate,
-    0x139D: smyth_event,
-    0x139F: levistone_event,
-    0x13A5: dr_unne_event,
-    0x13A7: sara_event,
-    0x13AA: citadel_of_trials_chest_event,
-    0x13ad: locked_cornelia_event,
-    0x13af: citadel_guide,
-    0x13B4: slab_chest_event,
-    0x13B5: bikke_event,
-    0x13B7: vampire_event,
-    0x13b8: sarda_event,
-    0x13BD: waterfall_robot_event,
-    0x1f60: wow_chancellor,
-    0x13a3: kraken_event,
-    0x13a8: kary_event,
-    0x13b3: lich_event,
-    0x13bb: tiamat_event,
-}
+EVENT_SOURCE_MAP = {}
 
 NEW_REWARD_SOURCE = {
     "king": NpcSource(map_id=0x39, npc_index=2),
@@ -245,17 +185,43 @@ class KeyItemPlacement(object):
         self.chests = self._load_chests()
         self.our_events = AddressableOutputStream(0x8223F4C, max_size=0x1860)
 
+        for file in os.listdir("scripts/"):
+            if file.endswith(".script"):
+                add_events = KeyItemPlacement._parse_script(f"scripts/{file}")
+                for event_id, source in add_events.items():
+                    EVENT_SOURCE_MAP[event_id] = source
+
         if clingo_seed is not None:
             key_item_locations = self._solve_placement(clingo_seed)
         else:
             key_item_locations = self._vanilla_placement()
         self._do_placement(key_item_locations)
 
+    @staticmethod
+    def _parse_script(script: str) -> dict:
+        events = {}
+        script_id = None
+        script_code = ""
+        with open(script, "r") as script_text:
+            for line in script_text.readlines():
+                if line.startswith("begin script="):
+                    if script_id is not None:
+                        events[script_id] = script_code
+                        script_code = ""
+                    script_id = int(line[line.find("=") + 1:], 0)
+                elif script_id is not None:
+                    script_code += line
+        if script_id is not None:
+            events[script_id] = script_code
+        return events
+
     def _do_placement(self, key_item_locations: tuple):
         source_headers = self._prepare_header(key_item_locations)
 
+        event_ids = sorted(EVENT_SOURCE_MAP.keys())
         patches = {}
-        for event_id, source in EVENT_SOURCE_MAP.items():
+        for event_id in event_ids:
+            source = EVENT_SOURCE_MAP[event_id]
             event_source = pparse(f"{source_headers}\n\n{source}")
 
             event_addr = self.events.get_addr(event_id)
