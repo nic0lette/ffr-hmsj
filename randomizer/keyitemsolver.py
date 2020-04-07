@@ -43,7 +43,6 @@ from stream.outputstream import AddressableOutputStream, OutputStream
 KeyItem = namedtuple("KeyItem", ["sprite", "movable", "key_item", "reward"])
 NpcSource = namedtuple("NpcSource", ["map_id", "npc_index"])
 ChestSource = namedtuple("ChestSource", ["map_id", "chest_id", "sprite_id"])
-VehiclePosition = namedtuple("VehiclePosition", ["x", "y"])
 
 EVENT_SOURCE_MAP = {}
 
@@ -109,66 +108,6 @@ NEW_KEY_ITEMS = {
     "air": KeyItem(sprite=0x4F, movable=False, key_item=None, reward=air_reward),
 }
 
-SHIP_LOCATIONS = {
-    "king": VehiclePosition(x=0x918, y=0xa28),
-    "sara": VehiclePosition(x=0x918, y=0xa28),
-    "bikke": VehiclePosition(x=0xcb8, y=0x928),
-    "marsh": VehiclePosition(x=-1, y=-1),
-    "astos": VehiclePosition(x=-1, y=-1),
-    "matoya": VehiclePosition(x=0x988, y=0x858),
-    "elf": VehiclePosition(x=-1, y=-1),
-    "locked_cornelia": VehiclePosition(x=0x918, y=0xa28),
-    "nerrick": VehiclePosition(x=0x738, y=0x838),
-    "vampire": VehiclePosition(x=-1, y=-1),
-    "sarda": VehiclePosition(x=-1, y=-1),
-    "lukahn": VehiclePosition(x=-1, y=-1),
-    "ice": VehiclePosition(x=0xcb8, y=0x928),
-    "citadel_of_trials": VehiclePosition(x=-1, y=-1),
-    "bahamut": VehiclePosition(x=-1, y=-1),
-    "waterfall": VehiclePosition(x=-1, y=-1),
-    "fairy": VehiclePosition(x=-1, y=-1),
-    "mermaids": VehiclePosition(x=-1, y=-1),
-    "dr_unne": VehiclePosition(x=-1, y=-1),
-    "lefien": VehiclePosition(x=-1, y=-1),
-    "sky2": VehiclePosition(x=-1, y=-1),
-    "smyth": VehiclePosition(x=0x738, y=0x838),
-    "desert": VehiclePosition(x=-1, y=-1),
-    "lich": VehiclePosition(x=-1, y=-1),
-    "kary": VehiclePosition(x=-1, y=-1),
-    "kraken": VehiclePosition(x=-1, y=-1),
-    "tiamat": VehiclePosition(x=-1, y=-1),
-}
-
-AIRSHIP_LOCATIONS = {
-    "king": VehiclePosition(x=0x918, y=0x998),
-    "sara": VehiclePosition(x=0x918, y=0x998),
-    "bikke": VehiclePosition(x=0xcb8, y=0x8f8),
-    "marsh": VehiclePosition(x=0x5f8, y=0xe48),
-    "astos": VehiclePosition(x=0x5f8, y=0x838),
-    "matoya": VehiclePosition(x=0xa18, y=0x6f8),
-    "elf": VehiclePosition(x=0x818, y=0xd78),
-    "locked_cornelia": VehiclePosition(x=0x918, y=0x998),
-    "nerrick": VehiclePosition(x=0x5d8, y=0x958),
-    "vampire": VehiclePosition(x=0x3a8, y=0xb48),
-    "sarda": VehiclePosition(x=0x178, y=0xb88),
-    "lukahn": VehiclePosition(x=0xd38, y=0xd38),
-    "ice": VehiclePosition(x=0xc08, y=0xb18),
-    "citadel_of_trials": VehiclePosition(x=0x7a8, y=0x278),
-    "bahamut": VehiclePosition(x=-1, y=-1),
-    "waterfall": VehiclePosition(x=-1, y=-1),
-    "fairy": VehiclePosition(x=-1, y=-1),
-    "mermaids": VehiclePosition(x=-1, y=-1),
-    "dr_unne": VehiclePosition(x=0x4a8, y=0x998),
-    "lefien": VehiclePosition(x=-1, y=-1),
-    "sky2": VehiclePosition(x=-1, y=-1),
-    "smyth": VehiclePosition(x=0x5d8, y=0x958),
-    "desert": VehiclePosition(x=0xd68, y=0xe68),
-    "lich": VehiclePosition(x=0x3a8, y=0xb48),
-    "kary": VehiclePosition(x=0xb68, y=0xc68),
-    "kraken": VehiclePosition(x=-1, y=-1),
-    "tiamat": VehiclePosition(x=-1, y=-1),
-}
-
 # All pairings are of the form "pair(item,location)" - need to parse the info
 Placement = namedtuple("Placement", ["item", "location"])
 
@@ -199,7 +138,7 @@ class KeyItemPlacement(object):
             key_item_locations = self._solve_placement(clingo_seed)
         else:
             key_item_locations = self._vanilla_placement()
-        self._do_placement(key_item_locations)
+        self._do_placement(key_item_locations, by_source)
 
     @staticmethod
     def _parse_data(data_file_path: str) -> list:
@@ -247,7 +186,7 @@ class KeyItemPlacement(object):
             events[script_id] = script_code
         return events
 
-    def _do_placement(self, key_item_locations: tuple):
+    def _do_placement(self, key_item_locations: tuple, key_items: dict):
         source_headers = self._prepare_header(key_item_locations)
 
         event_ids = sorted(EVENT_SOURCE_MAP.keys())
@@ -294,31 +233,31 @@ class KeyItemPlacement(object):
 
         for placement in key_item_locations:
             if placement.item == "ship":
-                ship_location = SHIP_LOCATIONS[placement.location]
-                if ship_location.x == -1 or ship_location.y == -1:
-                    ship_location = SHIP_LOCATIONS["king"]
+                ship_location = key_items[placement.location]
+                if ship_location["ship_x"] == -1 or ship_location["ship_y"] == -1:
+                    ship_location = key_items["king"]
                     print(f"Ship placed at {placement.location} -> moved to Cornelia")
                 else:
                     print(f"Ship placed: {placement.location} -> {ship_location}")
             elif placement.item == "airship":
-                airship_location = AIRSHIP_LOCATIONS[placement.location]
-                if airship_location.x == -1 or airship_location.y == -1:
+                airship_location = key_items[placement.location]
+                if airship_location["airship_x"] == -1 or airship_location["airship_y"] == -1:
                     raise RuntimeError(f"Airship placed in an impossible spot? {airship_location}")
                 else:
                     print(f"Airship placed: {placement.location} -> {airship_location}")
 
         if self.flags.start_item == "ship":
             print(f"Start with ship -> moved to Cornelia")
-            ship_location = SHIP_LOCATIONS["king"]
+            ship_location = key_items["king"]
         elif self.flags.start_item == "airship":
             print(f"Start with airship -> moved to Cornelia")
-            airship_location = AIRSHIP_LOCATIONS["king"]
+            airship_location = key_items["king"]
 
         vehicle_starts = OutputStream()
-        vehicle_starts.put_u32(ship_location.x)
-        vehicle_starts.put_u32(ship_location.y)
-        vehicle_starts.put_u32(airship_location.x)
-        vehicle_starts.put_u32(airship_location.y)
+        vehicle_starts.put_u32(ship_location["ship_x"])
+        vehicle_starts.put_u32(ship_location["ship_y"])
+        vehicle_starts.put_u32(airship_location["airship_x"])
+        vehicle_starts.put_u32(airship_location["airship_y"])
 
         self.rom = self.rom.apply_patch(0x65278, vehicle_starts.get_buffer())
 
