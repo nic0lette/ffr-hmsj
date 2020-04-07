@@ -29,6 +29,7 @@ from doslib.textblock import TextBlock
 from randomizer.credits import add_credits
 from randomizer.flags import Flags
 from randomizer.formations import FormationRandomization
+from randomizer.keyitemplacement import solve_placement, vanilla_placement
 from randomizer.keyitemsolver import KeyItemPlacement
 from randomizer.randomtreasure import random_bucketed_treasures
 from randomizer.spellshuffle import SpellShuffle
@@ -75,9 +76,10 @@ def randomize_rom(rom: Rom, flags: Flags, rom_seed: str) -> Rom:
     rom = update_xp_requirements(rom, flags.exp_mult)
 
     if flags.key_item_shuffle is not None:
-        placement = KeyItemPlacement(rom, flags, rng.randint(0, 0xffffffff))
+        key_item_locations = solve_placement(rng.randint(0, 0xffffffff))
     else:
-        placement = KeyItemPlacement(rom, flags)
+        key_item_locations = vanilla_placement()
+    placement = KeyItemPlacement(rom, flags, key_item_locations)
     rom = placement.rom
 
     if flags.magic is not None:

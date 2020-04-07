@@ -12,10 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import json
 import os
 from collections import namedtuple
-from subprocess import run, PIPE
 
 from doslib.event import EventTextBlock, EventTables
 from doslib.gen.map import Npc
@@ -96,13 +94,10 @@ NEW_KEY_ITEMS = {
     "air": KeyItem(sprite=0x4F, movable=False, key_item=None, reward=air_reward),
 }
 
-# All pairings are of the form "pair(item,location)" - need to parse the info
-Placement = namedtuple("Placement", ["item", "location"])
-
 
 class KeyItemPlacement(object):
 
-    def __init__(self, rom: Rom, flags: Flags, clingo_seed: int = None):
+    def __init__(self, rom: Rom, flags: Flags, key_item_locations: tuple):
         self.rom = rom
         self.flags = flags
         self.maps = Maps(rom)
@@ -122,10 +117,6 @@ class KeyItemPlacement(object):
         for key_item in KeyItemPlacement._parse_data("data/KeyItemPlacement.tsv"):
             by_source[key_item["source"]] = key_item
 
-        if clingo_seed is not None:
-            key_item_locations = self._solve_placement(clingo_seed)
-        else:
-            key_item_locations = self._vanilla_placement()
         self._do_placement(key_item_locations, by_source)
 
     @staticmethod
@@ -234,7 +225,7 @@ class KeyItemPlacement(object):
                 else:
                     print(f"Airship placed: {placement.location} -> {airship_location}")
 
-        if self.flags.start_item == "ship":
+        if True or self.flags.start_item == "ship":
             print(f"Start with ship -> moved to Cornelia")
             ship_location = key_items["king"]
         elif self.flags.start_item == "airship":
@@ -380,75 +371,6 @@ class KeyItemPlacement(object):
         for chest in self.chests:
             chest.write(chest_data)
         self.rom = self.rom.apply_patch(0x217FB4, chest_data.get_buffer())
-
-    def _solve_placement(self, seed: int) -> tuple:
-        """Create a random distribution for key items (KI).
-
-        Note: this requires an installation of Clingo 4.5 or better
-
-        :param seed: The random number seed to use for the solver.
-        :return: A list of tuples that contain item+location for each KI.
-        """
-
-        if self.flags.start_item == "ship":
-            solving_file = "KeyItemSolvingShip.lp"
-            data_file = "KeyItemDataShip.lp"
-        elif self.flags.start_item == "airship":
-            solving_file = "KeyItemSolving.lp"
-            data_file = "KeyItemData.lp"
-        else:
-            solving_file = "BaseKeyItemSolving.lp"
-            data_file = "BaseKeyItemData.lp"
-
-        command = [
-            "clingo", f"asp/{solving_file}", f"asp/{data_file}",
-            "--sign-def=rnd",
-            "--seed=" + str(seed),
-            "--outf=2"
-        ]
-
-        clingo_out = json.loads(run(command, stdout=PIPE).stdout)
-        pairings = clingo_out['Call'][0]['Witnesses'][0]['Value']
-
-        ki_placement = []
-        for pairing in pairings:
-            pairing = Placement(*pairing[5:len(pairing) - 1].split(","))
-            ki_placement.append(pairing)
-
-        return tuple(ki_placement)
-
-    @staticmethod
-    def _vanilla_placement() -> tuple:
-        return (
-            Placement("bridge", "king"),
-            Placement("lute", "sara"),
-            Placement("ship", "bikke"),
-            Placement("crown", "marsh"),
-            Placement("crystal", "astos"),
-            Placement("jolt_tonic", "matoya"),
-            Placement("mystic_key", "elf"),
-            Placement("nitro_powder", "locked_cornelia"),
-            Placement("canal", "nerrick"),
-            Placement("star_ruby", "vampire"),
-            Placement("rod", "sarda"),
-            Placement("canoe", "lukahn"),
-            Placement("levistone", "ice"),
-            Placement("airship", "desert"),
-            Placement("rats_tail", "citadel_of_trials"),
-            Placement("promotion", "bahamut"),
-            Placement("bottle", "caravan"),
-            Placement("oxyale", "fairy"),
-            Placement("rosetta_stone", "mermaids"),
-            Placement("lufienish", "dr_unne"),
-            Placement("chime", "lefien"),
-            Placement("warp_cube", "waterfall"),
-            Placement("adamantite", "sky2"),
-            Placement("excalibur", "smyth"),
-            Placement("earth", "lich"),
-            Placement("fire", "kary"),
-            Placement("water", "kraken"),
-            Placement("air", "tiamat"),
-        )
 
 
 STD_HEADER = """
