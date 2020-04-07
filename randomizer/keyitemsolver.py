@@ -191,11 +191,43 @@ class KeyItemPlacement(object):
                 for event_id, source in add_events.items():
                     EVENT_SOURCE_MAP[event_id] = source
 
+        by_source = {}
+        for key_item in KeyItemPlacement._parse_data("data/KeyItemPlacement.tsv"):
+            by_source[key_item["source"]] = key_item
+
         if clingo_seed is not None:
             key_item_locations = self._solve_placement(clingo_seed)
         else:
             key_item_locations = self._vanilla_placement()
         self._do_placement(key_item_locations)
+
+    @staticmethod
+    def _parse_data(data_file_path: str) -> list:
+        data = []
+        properties = None
+        with open(data_file_path, "r") as data_file:
+            first_line = True
+            for line in data_file.readlines():
+                if not first_line:
+                    values = line.strip().split('\t')
+                    row_data = {}
+                    for index, key in enumerate(properties):
+                        if index < len(values):
+                            if len(values[index]) == 0:
+                                value = None
+                            elif values[index].lower() in ["true", "false"]:
+                                value = values[index].lower() == "true"
+                            else:
+                                try:
+                                    value = int(values[index], 0)
+                                except ValueError:
+                                    value = values[index]
+                            row_data[key] = value
+                    data.append(row_data)
+                else:
+                    properties = line.strip().split('\t')
+                    first_line = False
+        return data
 
     @staticmethod
     def _parse_script(script: str) -> dict:

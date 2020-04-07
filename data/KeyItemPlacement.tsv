@@ -1,0 +1,28 @@
+source	type	sprite	movable	map_id	index	sprite_index	ship_x	ship_y	airship_x	airship_y	vanilla_reward	plot_flag	plot_item	extra
+king	npc	0x22	TRUE	0x39	2	-1	2328	2600	2328	2456	bridge	Obtained Bridge		
+sara	npc	0x0	TRUE	0x39	3	-1	2328	2600	2328	2456	lute	Obtained Lute	Lute	
+bikke	npc	0x45	TRUE	0x62	2	-1	3256	2344	3256	2296	ship	Obtained Ship		
+marsh	chest	0x94	TRUE	0x5b	5	0	-1	-1	1528	3656	crown	Obtained Crown	Crown	
+astos	npc	0x47	TRUE	0x58	0	-1	-1	-1	1528	2104	crystal	Obtained Crystal Eye	Crystal Eye	
+matoya	npc	0x37	TRUE	0x61	4	-1	2440	2136	2584	1784	jolt_tonic	Obtained Jolt Tonic	Jolt Tonic	
+elf	npc	0x31	FALSE	0x6	7	-1	-1	-1	2072	3448	mystic_key	Obtained Mystic Key	Mystic Key	remove_all 0x1f4a
+locked_cornelia	chest	0xd	TRUE	0x38	2	2	2328	2600	2328	2456	nitro_powder	Obtained Nitro Powder	Nitro Powder	
+nerrick	npc	0x3b	TRUE	0x57	11	-1	1848	2104	1496	2392	canal	Obtained Canal		
+vampire	chest	0x58	FALSE	0x3	1	0	-1	-1	936	2888	star_ruby	Obtained Star Ruby	Star Ruby	
+sarda	npc	0x39	TRUE	0x37	0	-1	-1	-1	376	2952	rod	Obtained Earth Rod	Earth Rod	
+lukahn	npc	0x38	TRUE	0x2f	13	-1	-1	-1	3384	3384	canoe	Obtained Canoe	Canoe	
+ice	npc	0x57	FALSE	0x44	0	-1	3256	2344	3080	2840	levistone	Obtained Levistone	Levistone	
+citadel_of_trials	chest	0x25	TRUE	0x4f	8	0	-1	-1	1960	632	rats_tail	Obtained Rat's Tail	Rat's Tail	
+bahamut	npc	0x64	FALSE	0x54	2	-1	-1	-1	-1	-1	promotion	Obtained Class Change		promote_pcs
+waterfall	npc	0x2b	TRUE	0x53	0	-1	-1	-1	-1	-1	warp_cube	Obtained Warp Cube	Warp Cube	
+fairy	npc	0x29	TRUE	0x47	11	-1	-1	-1	-1	-1	oxyale	Obtained Oxyale	Oxyale	
+mermaids	chest	0x1b	TRUE	0x1e	12	0	-1	-1	-1	-1	rosetta_stone	Obtained Rosetta Stone	Rosetta Stone	
+dr_unne	npc	0x3a	TRUE	0x6a	0	-1	-1	-1	1192	2456	lufienish	Learned Lufienian		
+lefien	npc	0x21	TRUE	0x70	11	-1	-1	-1	-1	-1	chime	Obtained Chime	Chime	
+sky2	npc	0x59	FALSE	0x5d	0	-1	-1	-1	-1	-1	adamantite	Obtained Adamantite	Adamantite	
+smyth	npc	0x3c	TRUE	0x57	4	-1	1848	2104	1496	2392	excalibur	Obtained Excalibur	Excalibur	
+desert	chest	0xac	FALSE	0x0	12	0	-1	-1	3432	3688	airship	Obtained Airship		
+lich	npc	0x51	FALSE	0x5	10	-1	-1	-1	936	2888	earth	Lit Earth Crystal		
+kary	npc	0x52	FALSE	0x2e	0	-1	-1	-1	2920	3176	fire	Lit Fire Crystal		
+kraken	npc	0x50	FALSE	0x17	0	-1	-1	-1	-1	-1	water	Lit Water Crystal		
+tiamat	npc	0x4f	FALSE	0x60	0	-1	-1	-1	-1	-1	air	Lit Air Crystal		
