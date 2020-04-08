@@ -168,11 +168,14 @@ class KeyItemPlacement(object):
     def _do_placement(self, key_item_locations: tuple, key_items: dict):
         source_headers = self._prepare_header(key_item_locations)
 
+        event_sources = {}
         event_ids = sorted(EVENT_SOURCE_MAP.keys())
         patches = {}
         for event_id in event_ids:
             source = EVENT_SOURCE_MAP[event_id]
             event_source = pparse(f"{source_headers}\n\n{source}")
+
+            event_sources[event_id] = source
 
             event_addr = self.events.get_addr(event_id)
             event_space = self.rom.get_event(Rom.pointer_to_offset(event_addr)).size()
@@ -190,6 +193,11 @@ class KeyItemPlacement(object):
             else:
                 # Add the event to the vanilla patches.
                 patches[Rom.pointer_to_offset(event_addr)] = event
+
+        with open("sources.debug", "w") as debug:
+            debug.write(f"Headers:\n{source_headers}\n\n")
+            for event_id in sorted(event_sources.keys()):
+                debug.write(f"Event: {hex(event_id)}\n{event_sources[event_id]}\n\n")
 
         self._update_npcs(key_item_locations)
         self._unite_mystic_key_doors()
