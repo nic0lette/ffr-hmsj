@@ -24,6 +24,7 @@ from event import easm
 from event.epp import pparse
 from randomizer.flags import Flags
 from randomizer.keyitemrewards import *
+from randomizer.placements import Placements
 from stream.outputstream import AddressableOutputStream, OutputStream
 
 KeyItem = namedtuple("KeyItem", ["sprite", "movable", "key_item", "reward"])
@@ -117,6 +118,8 @@ class KeyItemPlacement(object):
         for key_item in KeyItemPlacement._parse_data("data/KeyItemPlacement.tsv"):
             by_source[key_item["source"]] = key_item
 
+        placements = Placements(key_item_locations)
+
         self._do_placement(key_item_locations, by_source)
 
     @staticmethod
@@ -129,21 +132,39 @@ class KeyItemPlacement(object):
                 if not first_line:
                     values = line.strip().split('\t')
                     row_data = {}
+                    out = ""
                     for index, key in enumerate(properties):
                         if index < len(values):
                             if len(values[index]) == 0:
                                 value = None
+                                out += f"{key}={value},"
                             elif values[index].lower() in ["true", "false"]:
                                 value = values[index].lower() == "true"
+                                out += f"{key}={value},"
                             else:
                                 try:
                                     value = int(values[index], 0)
+                                    if key == "ship_x":
+                                        out += f"ship=VehiclePlacement(x={value},"
+                                    elif key == "ship_y":
+                                        out += f"y={value}),"
+                                    elif key == "airship_x":
+                                        out += f"airship=VehiclePlacement(x={value},"
+                                    elif key == "airship_y":
+                                        out += f"y={value}),"
+                                    else:
+                                        out += f"{key}={hex(value)},"
                                 except ValueError:
                                     value = values[index]
+                                    out += f"{key}=\"{value}\","
                             row_data[key] = value
+                        else:
+                            out += f"{key}=None,"
                     data.append(row_data)
+                    print(f"Placement({out}),")
                 else:
                     properties = line.strip().split('\t')
+                    print(f"{properties}")
                     first_line = False
         return data
 
