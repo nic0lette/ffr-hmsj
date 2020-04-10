@@ -28,39 +28,67 @@ from randomizer.placements import Placements
 from stream.outputstream import AddressableOutputStream, OutputStream
 
 KeyItem = namedtuple("KeyItem", ["sprite", "movable", "key_item", "reward"])
-NpcSource = namedtuple("NpcSource", ["map_id", "npc_index"])
-ChestSource = namedtuple("ChestSource", ["map_id", "chest_id", "sprite_id"])
+NpcSource = namedtuple("NpcSource", ["map_id", "npc_index", "ship", "airship"])
+ChestSource = namedtuple("ChestSource", ["map_id", "chest_id", "sprite_id", "ship", "airship"])
+VehiclePlacement = namedtuple("VehiclePlacement", ["x", "y"])
 
 EVENT_SOURCE_MAP = {}
 
 NEW_REWARD_SOURCE = {
-    "king": NpcSource(map_id=0x39, npc_index=2),
-    "sara": NpcSource(map_id=0x39, npc_index=3),
-    "bikke": NpcSource(map_id=0x62, npc_index=2),
-    "marsh": ChestSource(map_id=0x5B, chest_id=5, sprite_id=0),
-    "astos": NpcSource(map_id=0x58, npc_index=0),
-    "matoya": NpcSource(map_id=0x61, npc_index=4),
-    "elf": NpcSource(map_id=0x06, npc_index=7),
-    "locked_cornelia": ChestSource(map_id=0x38, chest_id=2, sprite_id=2),
-    "nerrick": NpcSource(map_id=0x57, npc_index=11),
-    "vampire": ChestSource(map_id=0x03, chest_id=1, sprite_id=0),
-    "sarda": NpcSource(map_id=0x37, npc_index=0),
-    "lukahn": NpcSource(map_id=0x2F, npc_index=13),
-    "ice": NpcSource(map_id=0x44, npc_index=0),
-    "citadel_of_trials": ChestSource(map_id=0x4F, chest_id=8, sprite_id=0),
-    "bahamut": NpcSource(map_id=0x54, npc_index=2),
-    "waterfall": NpcSource(map_id=0x53, npc_index=0),
-    "fairy": NpcSource(map_id=0x47, npc_index=11),
-    "mermaids": ChestSource(map_id=0x1E, chest_id=12, sprite_id=0),
-    "dr_unne": NpcSource(map_id=0x6A, npc_index=0),
-    "lefien": NpcSource(map_id=0x70, npc_index=11),
-    "sky2": NpcSource(map_id=0x5D, npc_index=0),
-    "smyth": NpcSource(map_id=0x57, npc_index=4),
-    "desert": ChestSource(map_id=None, chest_id=12, sprite_id=0),
-    "lich": NpcSource(map_id=0x05, npc_index=10),
-    "kary": NpcSource(map_id=0x2E, npc_index=0),
-    "kraken": NpcSource(map_id=0x17, npc_index=0),
-    "tiamat": NpcSource(map_id=0x60, npc_index=0),
+    "king": NpcSource(map_id=0x39, npc_index=2,
+                      ship=VehiclePlacement(x=2328, y=2600), airship=VehiclePlacement(x=2328, y=2456)),
+    "sara": NpcSource(map_id=0x39, npc_index=3,
+                      ship=VehiclePlacement(x=2328, y=2600), airship=VehiclePlacement(x=2328, y=2456)),
+    "bikke": NpcSource(map_id=0x62, npc_index=2,
+                       ship=VehiclePlacement(x=3256, y=2344), airship=VehiclePlacement(x=3256, y=2296)),
+    "marsh": ChestSource(map_id=0x5B, chest_id=5, sprite_id=0,
+                         ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=1528, y=3656)),
+    "astos": NpcSource(map_id=0x58, npc_index=0,
+                       ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=1528, y=2104)),
+    "matoya": NpcSource(map_id=0x61, npc_index=4,
+                        ship=VehiclePlacement(x=2440, y=2136), airship=VehiclePlacement(x=2584, y=1784)),
+    "elf": NpcSource(map_id=0x06, npc_index=7,
+                     ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=2072, y=3448)),
+    "locked_cornelia": ChestSource(map_id=0x38, chest_id=2, sprite_id=2,
+                                   ship=VehiclePlacement(x=2328, y=2600), airship=VehiclePlacement(x=2328, y=2456)),
+    "nerrick": NpcSource(map_id=0x57, npc_index=11,
+                         ship=VehiclePlacement(x=1848, y=2104), airship=VehiclePlacement(x=1496, y=2392)),
+    "vampire": ChestSource(map_id=0x03, chest_id=1, sprite_id=0,
+                           ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=936, y=2888)),
+    "sarda": NpcSource(map_id=0x37, npc_index=0,
+                       ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=376, y=2952)),
+    "lukahn": NpcSource(map_id=0x2F, npc_index=13,
+                        ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=3384, y=3384)),
+    "ice": NpcSource(map_id=0x44, npc_index=0,
+                     ship=VehiclePlacement(x=3256, y=2344), airship=VehiclePlacement(x=3080, y=2840)),
+    "citadel_of_trials": ChestSource(map_id=0x4F, chest_id=8, sprite_id=0,
+                                     ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=1960, y=632)),
+    "bahamut": NpcSource(map_id=0x54, npc_index=2,
+                         ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "waterfall": NpcSource(map_id=0x53, npc_index=0,
+                           ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "fairy": NpcSource(map_id=0x47, npc_index=11,
+                       ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "mermaids": ChestSource(map_id=0x1E, chest_id=12, sprite_id=0,
+                            ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "dr_unne": NpcSource(map_id=0x6A, npc_index=0,
+                         ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=1192, y=2456)),
+    "lefien": NpcSource(map_id=0x70, npc_index=11,
+                        ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "sky2": NpcSource(map_id=0x5D, npc_index=0,
+                      ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "smyth": NpcSource(map_id=0x57, npc_index=4,
+                       ship=VehiclePlacement(x=1848, y=2104), airship=VehiclePlacement(x=1496, y=2392)),
+    "desert": ChestSource(map_id=None, chest_id=12, sprite_id=0,
+                          ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=3432, y=3688)),
+    "lich": NpcSource(map_id=0x05, npc_index=10,
+                      ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=936, y=2888)),
+    "kary": NpcSource(map_id=0x2E, npc_index=0,
+                      ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=2920, y=3176)),
+    "kraken": NpcSource(map_id=0x17, npc_index=0,
+                        ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
+    "tiamat": NpcSource(map_id=0x60, npc_index=0,
+                        ship=VehiclePlacement(x=-1, y=-1), airship=VehiclePlacement(x=-1, y=-1)),
 }
 
 NEW_KEY_ITEMS = {
@@ -241,31 +269,22 @@ class KeyItemPlacement(object):
 
         for placement in key_item_locations:
             if placement.item == "ship":
-                ship_location = key_items[placement.location]
-                if ship_location["ship_x"] == -1 or ship_location["ship_y"] == -1:
-                    ship_location = key_items["king"]
-                    print(f"Ship placed at {placement.location} -> moved to Cornelia")
-                else:
-                    print(f"Ship placed: {placement.location} -> {ship_location}")
+                ship_location = NEW_REWARD_SOURCE[placement.location].ship
             elif placement.item == "airship":
-                airship_location = key_items[placement.location]
-                if airship_location["airship_x"] == -1 or airship_location["airship_y"] == -1:
-                    raise RuntimeError(f"Airship placed in an impossible spot? {airship_location}")
-                else:
-                    print(f"Airship placed: {placement.location} -> {airship_location}")
+                airship_location = NEW_REWARD_SOURCE[placement.location].airship
 
         if True or self.flags.start_item == "ship":
             print(f"Start with ship -> moved to Cornelia")
-            ship_location = key_items["king"]
+            ship_location = NEW_REWARD_SOURCE["king"].ship
         elif self.flags.start_item == "airship":
             print(f"Start with airship -> moved to Cornelia")
-            airship_location = key_items["king"]
+            airship_location = NEW_REWARD_SOURCE["king"].airship
 
         vehicle_starts = OutputStream()
-        vehicle_starts.put_u32(ship_location["ship_x"])
-        vehicle_starts.put_u32(ship_location["ship_y"])
-        vehicle_starts.put_u32(airship_location["airship_x"])
-        vehicle_starts.put_u32(airship_location["airship_y"])
+        vehicle_starts.put_u32(ship_location.x)
+        vehicle_starts.put_u32(ship_location.y)
+        vehicle_starts.put_u32(airship_location.x)
+        vehicle_starts.put_u32(airship_location.y)
 
         self.rom = self.rom.apply_patch(0x65278, vehicle_starts.get_buffer())
 
